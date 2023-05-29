@@ -5,7 +5,8 @@ import * as stepTracer from './stepTracer'
 import * as statCollector from './statCollector'
 import * as processTracer from './processTracer'
 import * as logger from './logger'
-import { WorkflowJobType } from './interfaces'
+import { AllResult, RawStats, WorkflowJobType } from './interfaces'
+import * as fs from 'fs'
 
 const { pull_request } = github.context.payload
 const { workflow, job, repo, runId, sha } = github.context
@@ -58,6 +59,17 @@ async function getCurrentJob(): Promise<WorkflowJobType | null> {
     )
   }
   return null
+}
+
+async function saveStatsToJsonFile(
+  currentJob: WorkflowJobType,
+  content: RawStats
+): Promise<void> {
+  const statsJsonFilePath = core.getInput('stats_json_file_path')
+  if (statsJsonFilePath) {
+    logger.info(`Saving stats to file: ${statsJsonFilePath}`)
+    await fs.writeFile(statsJsonFilePath, content)
+  }
 }
 
 async function reportAll(
@@ -136,7 +148,7 @@ async function run(): Promise<void> {
     // Report step tracer
     const stepTracerContent: string | null = await stepTracer.report(currentJob)
     // Report stat collector
-    const stepCollectorContent: string | null = await statCollector.report(
+    const stepCollectorContent: AllResult | null = await statCollector.report(
       currentJob
     )
     // Report process tracer
@@ -150,13 +162,16 @@ async function run(): Promise<void> {
       allContent = allContent.concat(stepTracerContent, '\n')
     }
     if (stepCollectorContent) {
-      allContent = allContent.concat(stepCollectorContent, '\n')
+      allContent = allContent.concat(stepCollectorContent.graph, '\n')
     }
     if (procTracerContent) {
       allContent = allContent.concat(procTracerContent, '\n')
     }
 
     await reportAll(currentJob, allContent)
+    if (stepCollectorContent) {
+      await saveStatsToJsonFile(currentJob, stepCollectorContent.rawStats)
+    }
 
     logger.info(`Finish completed`)
   } catch (error: any) {
