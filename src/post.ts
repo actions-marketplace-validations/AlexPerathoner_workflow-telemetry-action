@@ -66,44 +66,43 @@ async function saveStatsToJsonFile(
   currentJob: WorkflowJobType,
   content: RawStats
 ): Promise<void> {
-  let newContent: { [timestamp: string]: {isoString: string, userLoad: number, systemLoad: number, activeMemory: number, availableMemory: number, networkRead: number, networkWrite: number, diskRead: number, diskWrite: number} } = {}
-  let minX = Math.min(content.userLoad.length, content.systemLoad.length, content.activeMemory.length, content.availableMemory.length, content.networkRead.length, content.networkWrite.length, content.diskRead.length, content.diskWrite.length)
-  for (let i = 0; i < minX; i++) {
-    const timestamp = content.userLoad[i].x
-    const formattedTime = new Date(timestamp).toISOString()
-    newContent[timestamp] = {
-      isoString: formattedTime,
-      userLoad: content.userLoad[i].y,
-      systemLoad: content.systemLoad[i].y,
-      activeMemory: content.activeMemory[i].y,
-      availableMemory: content.availableMemory[i].y,
-      networkRead: content.networkRead[i].y,
-      networkWrite: content.networkWrite[i].y,
-      diskRead: content.diskRead[i].y,
-      diskWrite: content.diskWrite[i].y
-    }
-  }
-  let statsJsonFilePath = core.getInput('stats_json_file_path')
+  const statsJsonFilePath = core.getInput('stats_json_file_path')
   if (statsJsonFilePath) {
+    let newContent: { [timestamp: string]: {isoString: string, userLoad: number, systemLoad: number, activeMemory: number, availableMemory: number, networkRead: number, networkWrite: number, diskRead: number, diskWrite: number} } = {}
+    let minX = Math.min(content.userLoad.length, content.systemLoad.length, content.activeMemory.length, content.availableMemory.length, content.networkRead.length, content.networkWrite.length, content.diskRead.length, content.diskWrite.length)
+    for (let i = 0; i < minX; i++) {
+      const timestamp = content.userLoad[i].x
+      const formattedTime = new Date(timestamp).toISOString()
+      newContent[timestamp] = {
+        isoString: formattedTime,
+        userLoad: content.userLoad[i].y,
+        systemLoad: content.systemLoad[i].y,
+        activeMemory: content.activeMemory[i].y,
+        availableMemory: content.availableMemory[i].y,
+        networkRead: content.networkRead[i].y,
+        networkWrite: content.networkWrite[i].y,
+        diskRead: content.diskRead[i].y,
+        diskWrite: content.diskWrite[i].y
+      }
+    }
+    logger.info(`Saving stats to file: ${statsJsonFilePath}`)
+    await fs.writeFile(statsJsonFilePath, JSON.stringify(newContent), (err) => {
+      if (err) {
+        logger.error(`Error saving stats to file: ${err}`)
+      }
+    })
+    const artifactClient = artifact.create()
+    const artifactName = 'raw-stats';
+    const files = [statsJsonFilePath]
+    const rootDirectory = '.';
+    const options = {
+      continueOnError: false
+    }
+    const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+    logger.info(`Artifact upload response: ${JSON.stringify(uploadResponse)}`)
   } else {
     logger.info(`No stats_json_file_path input provided. Skipping saving stats to file.`)
   }
-  statsJsonFilePath = "stats.json"
-  logger.info(`Saving stats to file: ${statsJsonFilePath}`)
-  await fs.writeFile(statsJsonFilePath, JSON.stringify(content), (err) => {
-    if (err) {
-      logger.error(`Error saving stats to file: ${err}`)
-    }
-  })
-  const artifactClient = artifact.create()
-  const artifactName = 'raw-stats';
-  const files = [statsJsonFilePath]
-  const rootDirectory = '.';
-  const options = {
-    continueOnError: false
-  }
-  const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-  logger.info(`Artifact upload response: ${JSON.stringify(uploadResponse)}`)
 }
 
 async function reportAll(
