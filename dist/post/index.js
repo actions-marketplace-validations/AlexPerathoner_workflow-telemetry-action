@@ -37814,7 +37814,8 @@ function getCurrentJob() {
 function saveStatsToJsonFile(currentJob, content) {
     return __awaiter(this, void 0, void 0, function* () {
         let newContent = {};
-        for (let i = 0; i < content.userLoad.length; i++) {
+        let minX = Math.min(content.userLoad.length, content.systemLoad.length, content.activeMemory.length, content.availableMemory.length, content.networkRead.length, content.networkWrite.length, content.diskRead.length, content.diskWrite.length);
+        for (let i = 0; i < minX; i++) {
             const timestamp = content.userLoad[i].x;
             const formattedTime = new Date(timestamp).toISOString();
             newContent[timestamp] = {
