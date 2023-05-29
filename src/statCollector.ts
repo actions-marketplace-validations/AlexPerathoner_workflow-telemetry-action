@@ -378,11 +378,11 @@ export async function start(): Promise<boolean> {
 
   try {
     let metricFrequency = 0
-    const metricFrequencyInput: string = core.getInput('metric_frequency')
+    const metricFrequencyInput: string = core.getInput('metric_frequency_thousands_of_second')
     if (metricFrequencyInput) {
       const metricFrequencyVal: number = parseInt(metricFrequencyInput)
       if (Number.isInteger(metricFrequencyVal)) {
-        metricFrequency = metricFrequencyVal * 1000
+        metricFrequency = metricFrequencyVal
       }
     }
 

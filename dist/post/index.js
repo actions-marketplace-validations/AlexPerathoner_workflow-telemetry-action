@@ -38721,11 +38721,11 @@ function start() {
         logger.info(`Starting stat collector ...`);
         try {
             let metricFrequency = 0;
-            const metricFrequencyInput = core.getInput('metric_frequency');
+            const metricFrequencyInput = core.getInput('metric_frequency_thousands_of_second');
             if (metricFrequencyInput) {
                 const metricFrequencyVal = parseInt(metricFrequencyInput);
                 if (Number.isInteger(metricFrequencyVal)) {
-                    metricFrequency = metricFrequencyVal * 1000;
+                    metricFrequency = metricFrequencyVal;
                 }
             }
             const child = (0, child_process_1.spawn)(process.argv[0], [path_1.default.join(__dirname, '../scw/index.js')], {
