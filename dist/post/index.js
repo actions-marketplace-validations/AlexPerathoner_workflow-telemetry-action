@@ -37813,6 +37813,21 @@ function getCurrentJob() {
 }
 function saveStatsToJsonFile(currentJob, content) {
     return __awaiter(this, void 0, void 0, function* () {
+        let newContent = {};
+        for (let i = 0; i < content.userLoad.length; i++) {
+            const timestamp = content.userLoad[i].x;
+            const formattedTime = new Date(timestamp).toISOString();
+            newContent[formattedTime] = {
+                userLoad: content.userLoad[i].y,
+                systemLoad: content.systemLoad[i].y,
+                activeMemory: content.activeMemory[i].y,
+                availableMemory: content.availableMemory[i].y,
+                networkRead: content.networkRead[i].y,
+                networkWrite: content.networkWrite[i].y,
+                diskRead: content.diskRead[i].y,
+                diskWrite: content.diskWrite[i].y
+            };
+        }
         let statsJsonFilePath = core.getInput('stats_json_file_path');
         if (statsJsonFilePath) {
         }

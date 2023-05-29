@@ -66,6 +66,21 @@ async function saveStatsToJsonFile(
   currentJob: WorkflowJobType,
   content: RawStats
 ): Promise<void> {
+  let newContent: { [timestamp: string]: {userLoad: number, systemLoad: number, activeMemory: number, availableMemory: number, networkRead: number, networkWrite: number, diskRead: number, diskWrite: number} } = {}
+  for (let i = 0; i < content.userLoad.length; i++) {
+    const timestamp = content.userLoad[i].x
+    const formattedTime = new Date(timestamp).toISOString()
+    newContent[formattedTime] = {
+      userLoad: content.userLoad[i].y,
+      systemLoad: content.systemLoad[i].y,
+      activeMemory: content.activeMemory[i].y,
+      availableMemory: content.availableMemory[i].y,
+      networkRead: content.networkRead[i].y,
+      networkWrite: content.networkWrite[i].y,
+      diskRead: content.diskRead[i].y,
+      diskWrite: content.diskWrite[i].y
+    }
+  }
   let statsJsonFilePath = core.getInput('stats_json_file_path')
   if (statsJsonFilePath) {
   } else {
