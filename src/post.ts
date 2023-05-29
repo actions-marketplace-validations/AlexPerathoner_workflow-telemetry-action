@@ -1,6 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { Octokit } from '@octokit/action'
+import * as artifact from '@actions/artifact'
 import * as stepTracer from './stepTracer'
 import * as statCollector from './statCollector'
 import * as processTracer from './processTracer'
@@ -69,6 +70,15 @@ async function saveStatsToJsonFile(
   if (statsJsonFilePath) {
     logger.info(`Saving stats to file: ${statsJsonFilePath}`)
     await fs.writeFile(statsJsonFilePath, JSON.stringify(content))
+    const artifactClient = artifact.create()
+    const artifactName = 'raw-stats';
+    const files = [statsJsonFilePath]
+    const rootDirectory = '.';
+    const options = {
+      continueOnError: false
+    }
+    const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+    logger.info(`Artifact upload response: ${JSON.stringify(uploadResponse)}`)
   }
 }
 
