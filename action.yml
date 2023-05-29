@@ -42,6 +42,10 @@ inputs:
     description: "Set to `dark` to generate charts compatible with Github dark mode. Defaults to 'light'."
     default: "light"
     required: false
+  stats_json_file_path:
+    description: "Path of the file to save the collected stats in JSON format. Defaults to 'raw-stats.json'."
+    default: "raw-stats.json"
+    required: false
 
 runs:
   using: "node16"

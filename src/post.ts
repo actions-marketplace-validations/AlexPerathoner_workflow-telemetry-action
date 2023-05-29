@@ -68,7 +68,7 @@ async function saveStatsToJsonFile(
   const statsJsonFilePath = core.getInput('stats_json_file_path')
   if (statsJsonFilePath) {
     logger.info(`Saving stats to file: ${statsJsonFilePath}`)
-    await fs.writeFile(statsJsonFilePath, content)
+    await fs.writeFile(statsJsonFilePath, JSON.stringify(content))
   }
 }
 
