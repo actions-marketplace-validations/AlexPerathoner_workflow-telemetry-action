@@ -66,20 +66,23 @@ async function saveStatsToJsonFile(
   currentJob: WorkflowJobType,
   content: RawStats
 ): Promise<void> {
-  const statsJsonFilePath = core.getInput('stats_json_file_path')
+  let statsJsonFilePath = core.getInput('stats_json_file_path')
   if (statsJsonFilePath) {
-    logger.info(`Saving stats to file: ${statsJsonFilePath}`)
-    await fs.writeFile(statsJsonFilePath, JSON.stringify(content))
-    const artifactClient = artifact.create()
-    const artifactName = 'raw-stats';
-    const files = [statsJsonFilePath]
-    const rootDirectory = '.';
-    const options = {
-      continueOnError: false
-    }
-    const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
-    logger.info(`Artifact upload response: ${JSON.stringify(uploadResponse)}`)
+  } else {
+    logger.info(`No stats_json_file_path input provided. Skipping saving stats to file.`)
   }
+  statsJsonFilePath = "stats.json"
+  logger.info(`Saving stats to file: ${statsJsonFilePath}`)
+  await fs.writeFile(statsJsonFilePath, JSON.stringify(content))
+  const artifactClient = artifact.create()
+  const artifactName = 'raw-stats';
+  const files = [statsJsonFilePath]
+  const rootDirectory = '.';
+  const options = {
+    continueOnError: false
+  }
+  const uploadResponse = await artifactClient.uploadArtifact(artifactName, files, rootDirectory, options)
+  logger.info(`Artifact upload response: ${JSON.stringify(uploadResponse)}`)
 }
 
 async function reportAll(
