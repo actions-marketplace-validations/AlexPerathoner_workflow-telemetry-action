@@ -66,11 +66,12 @@ async function saveStatsToJsonFile(
   currentJob: WorkflowJobType,
   content: RawStats
 ): Promise<void> {
-  let newContent: { [timestamp: string]: {userLoad: number, systemLoad: number, activeMemory: number, availableMemory: number, networkRead: number, networkWrite: number, diskRead: number, diskWrite: number} } = {}
+  let newContent: { [timestamp: string]: {isoString: string, userLoad: number, systemLoad: number, activeMemory: number, availableMemory: number, networkRead: number, networkWrite: number, diskRead: number, diskWrite: number} } = {}
   for (let i = 0; i < content.userLoad.length; i++) {
     const timestamp = content.userLoad[i].x
     const formattedTime = new Date(timestamp).toISOString()
-    newContent[formattedTime] = {
+    newContent[timestamp] = {
+      isoString: formattedTime,
       userLoad: content.userLoad[i].y,
       systemLoad: content.systemLoad[i].y,
       activeMemory: content.activeMemory[i].y,

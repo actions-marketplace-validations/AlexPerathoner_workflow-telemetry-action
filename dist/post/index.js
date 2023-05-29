@@ -37817,7 +37817,8 @@ function saveStatsToJsonFile(currentJob, content) {
         for (let i = 0; i < content.userLoad.length; i++) {
             const timestamp = content.userLoad[i].x;
             const formattedTime = new Date(timestamp).toISOString();
-            newContent[formattedTime] = {
+            newContent[timestamp] = {
+                isoString: formattedTime,
                 userLoad: content.userLoad[i].y,
                 systemLoad: content.systemLoad[i].y,
                 activeMemory: content.activeMemory[i].y,
