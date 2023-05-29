@@ -1,4 +1,4 @@
-name: "Workflow Telemetry"
+name: "Workflow Telemetry Save File"
 description: "Workflow Telemetry"
 author: "Serkan Özal <serkan@thundra.io>"
 inputs:
