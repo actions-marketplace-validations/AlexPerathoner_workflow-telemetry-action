@@ -73,7 +73,11 @@ async function saveStatsToJsonFile(
   }
   statsJsonFilePath = "stats.json"
   logger.info(`Saving stats to file: ${statsJsonFilePath}`)
-  await fs.writeFile(statsJsonFilePath, JSON.stringify(content))
+  await fs.writeFile(statsJsonFilePath, JSON.stringify(content), (err) => {
+    if (err) {
+      logger.error(`Error saving stats to file: ${err}`)
+    }
+  })
   const artifactClient = artifact.create()
   const artifactName = 'raw-stats';
   const files = [statsJsonFilePath]
